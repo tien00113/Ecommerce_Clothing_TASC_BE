@@ -24,6 +24,7 @@ public class Product {
 
     private String name;
     private int price;
+    private String image;
     private String description;
     // private String size;
     // private String color;

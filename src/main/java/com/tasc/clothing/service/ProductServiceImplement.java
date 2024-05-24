@@ -1,25 +1,85 @@
 package com.tasc.clothing.service;
 
-import com.tasc.clothing.model.Product;
+import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.tasc.clothing.exception.ProductException;
+import com.tasc.clothing.model.Product;
+import com.tasc.clothing.repository.ProRepository;
+
+@Service
 public class ProductServiceImplement implements ProductService{
+
+    @Autowired
+    private ProRepository proRepository;
 
     @Override
     public Product createProduct(Product product) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createProduct'");
+        Product newProduct = new Product();
+
+        newProduct.setName(product.getName());
+        newProduct.setDescription(product.getDescription());
+        newProduct.setPrice(product.getPrice());
+        newProduct.setDetails(product.getDetails());
+        newProduct.setImage(product.getImage());
+
+        return proRepository.save(newProduct);
     }
 
     @Override
-    public Product updateProduct(Product product, Long productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateProduct'");
+    public Product updateProduct(Product product) throws ProductException{
+        Optional<Product> esxistProduct = proRepository.findById(product.getId());
+
+        if(esxistProduct.isEmpty()){
+            throw new ProductException("Không tìm thấy sản phẩm có ID là: "+product.getId());
+        } 
+
+        Product updateProduct = esxistProduct.get();
+
+        if(product.getName()!= null){
+            updateProduct.setName(product.getName());
+        }
+        if(product.getDescription()!= null){
+            updateProduct.setDescription(product.getDescription());
+        }
+        if(product.getImage()!= null){
+            updateProduct.setImage(product.getImage());
+        }
+        if(product.getPrice()!= 0){
+            updateProduct.setPrice(product.getPrice());
+        }
+
+        if(product.getDetails() != null) {
+            updateProduct.setDetails(product.getDetails());
+        }
+
+        return proRepository.save(updateProduct);
+        
     }
 
     @Override
     public String deleteProduct(Long productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteProduct'");
+        proRepository.deleteById(productId);
+
+        return ("deleted product successfully");
+    }
+
+    @Override
+    public List<Product> getAllProduct() {
+        return proRepository.findAll();
+    }
+
+    @Override
+    public Product findProductById(Long productId) {
+        return proRepository.findById(productId).orElse(null);
+    }
+
+    @Override
+    public List<Product> findProductByCategory(Long categoryId) {
+       return proRepository.findByCategory(categoryId);
     }
     
 }
