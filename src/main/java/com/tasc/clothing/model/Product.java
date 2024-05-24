@@ -25,6 +25,7 @@ public class Product {
     private String name;
     private int price;
     private String description;
+    private String Image;
     // private String size;
     // private String color;
     @ElementCollection
