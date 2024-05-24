@@ -1,6 +1,7 @@
 package com.tasc.clothing.service;
 
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,14 +42,16 @@ public class AuthService {
         newUser.setFirstName(user.getFirstName());
         newUser.setLastName(user.getLastName());
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        newUser.setRoles(Collections.singleton(User.Role.USER));
+
+        Set<User.Role> userRoles = new HashSet<>(user.getRoles());
+        userRoles.add(User.Role.USER);
+        newUser.setRoles(userRoles);
 
         User savedUser = userRepository.save(newUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser.getEmail(),
                 savedUser.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         String token = JwtProvider.generateToken(authentication);
 
         return new AuthResponse(token, "Đăng ký thành công");
@@ -57,6 +60,7 @@ public class AuthService {
     public AuthResponse signin(LoginRequest loginRequest) {
         Authentication authentication = authenticate(loginRequest.getEmail(), loginRequest.getPassword());
         String token = JwtProvider.generateToken(authentication);
+
         return new AuthResponse(token, "Đăng nhập thành công");
     }
 
