@@ -31,13 +31,13 @@ public class ProductServiceImplement implements ProductService{
 
     @Override
     public Product updateProduct(Product product) throws ProductException{
-        Optional<Product> esxistProduct = proRepository.findById(product.getId());
+        Optional<Product> existProduct = proRepository.findById(product.getId());
 
-        if(esxistProduct.isEmpty()){
+        if(existProduct.isEmpty()){
             throw new ProductException("Không tìm thấy sản phẩm có ID là: "+product.getId());
         } 
 
-        Product updateProduct = esxistProduct.get();
+        Product updateProduct = existProduct.get();
 
         if(product.getName()!= null){
             updateProduct.setName(product.getName());
@@ -79,7 +79,7 @@ public class ProductServiceImplement implements ProductService{
 
     @Override
     public List<Product> findProductByCategory(Long categoryId) {
-       return proRepository.findByCategory(categoryId);
+       return proRepository.findByCategoryId(categoryId);
     }
     
 }

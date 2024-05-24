@@ -45,7 +45,7 @@ public class Order {
                 .limit(6)
                 .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
                 .toString();
-        this.orderId = datePart + "H2T" + randomPart;
+        this.orderId = datePart + "CLT" + randomPart;
     }
 
     @ManyToOne
