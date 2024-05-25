@@ -3,6 +3,7 @@ package com.tasc.clothing.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -24,17 +25,22 @@ public class Product {
 
     private String name;
     private int price;
+    private String image;
     private String description;
-    private String Image;
+  
     // private String size;
     // private String color;
     @ElementCollection
     @CollectionTable(name = "product_details", joinColumns = @JoinColumn(name = "product_id"))
     @MapKeyColumn(name = "detail_type")
     @Column(name = "detail_value")
-    private Map<String, Integer> details = new HashMap<>();
+    private Map<String, String> details = new HashMap<>();
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
     private Cart cart;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id")
+    private Category category;
 }
