@@ -1,6 +1,9 @@
 package com.tasc.clothing.model;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.persistence.CascadeType;
@@ -25,7 +28,7 @@ public class Product {
 
     private String name;
     private int price;
-    private String image;
+    private String images;
     private String description;
   
     // private String size;
@@ -36,11 +39,22 @@ public class Product {
     @Column(name = "detail_value")
     private Map<String, String> details = new HashMap<>();
 
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    public void addImage(String imageUrl) {
+        if (this.images == null || this.images.isEmpty()) {
+            this.images = imageUrl;
+        } else {
+            this.images += "," + imageUrl;
+        }
+    }
+
+    public List<String> getImageList() {
+        if (this.images == null || this.images.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(this.images.split(","));
+    }
 }

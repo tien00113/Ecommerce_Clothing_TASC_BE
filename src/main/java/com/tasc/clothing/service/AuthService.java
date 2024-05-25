@@ -1,6 +1,5 @@
 package com.tasc.clothing.service;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,6 +61,7 @@ public class AuthService {
     public AuthResponse signin(LoginRequest loginRequest) {
         Authentication authentication = authenticate(loginRequest.getEmail(), loginRequest.getPassword());
         String token = JwtProvider.generateToken(authentication);
+
         return new AuthResponse(token, "Đăng nhập thành công");
     }
 
