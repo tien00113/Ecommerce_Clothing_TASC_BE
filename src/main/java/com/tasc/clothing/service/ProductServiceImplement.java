@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.tasc.clothing.exception.ProductException;
 import com.tasc.clothing.model.Product;
 import com.tasc.clothing.repository.ProRepository;
+import com.tasc.clothing.request.ProductFilterRequest;
 
 @Service
 public class ProductServiceImplement implements ProductService{
@@ -24,7 +28,7 @@ public class ProductServiceImplement implements ProductService{
         newProduct.setDescription(product.getDescription());
         newProduct.setPrice(product.getPrice());
         newProduct.setDetails(product.getDetails());
-        newProduct.setImage(product.getImage());
+        newProduct.setImages(product.getImages());
 
         return proRepository.save(newProduct);
     }
@@ -45,8 +49,8 @@ public class ProductServiceImplement implements ProductService{
         if(product.getDescription()!= null){
             updateProduct.setDescription(product.getDescription());
         }
-        if(product.getImage()!= null){
-            updateProduct.setImage(product.getImage());
+        if(product.getImages()!= null){
+            updateProduct.setImages(product.getImages());
         }
         if(product.getPrice()!= 0){
             updateProduct.setPrice(product.getPrice());
@@ -81,5 +85,29 @@ public class ProductServiceImplement implements ProductService{
     public List<Product> findProductByCategory(Long categoryId) {
        return proRepository.findByCategoryId(categoryId);
     }
-    
+
+    @Override
+    public Page<Product> getAllFilter(ProductFilterRequest productFilterRequest, Pageable pageable) {
+        Specification<Product> specification = Specification.where(null);
+
+        if (productFilterRequest.getMinPrice() != 0) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("price"), productFilterRequest.getMinPrice()));
+        }
+        if (productFilterRequest.getMaxPrice() != 0) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.lessThanOrEqualTo(root.get("price"), productFilterRequest.getMaxPrice()));
+        }
+        if (productFilterRequest.getCategoryId() != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("category").get("id"), productFilterRequest.getCategoryId()));
+        }
+        if (productFilterRequest.getColor() != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(root.get("details").get("color"), "%" + productFilterRequest.getColor() + "%"));
+        }
+
+        return proRepository.findAll(specification, pageable);
+    }
+
 }
