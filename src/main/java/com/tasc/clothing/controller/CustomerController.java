@@ -13,12 +13,12 @@ import com.tasc.clothing.service.ProductService;
 
 @RestController
 public class CustomerController {
-    @Autowired
-    private ProductService productService;
+    // @Autowired
+    // private ProductService productService;
 
-    @GetMapping("/allproduct")
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> allProducts = productService.getAllProduct();
-        return new ResponseEntity<List<Product>>(allProducts, HttpStatus.OK);
-    }
+    // @GetMapping("/allproduct")
+    // public ResponseEntity<List<Product>> getAllProducts() {
+    //     List<Product> allProducts = productService.getAllProduct();
+    //     return new ResponseEntity<List<Product>>(allProducts, HttpStatus.OK);
+    // }
 }

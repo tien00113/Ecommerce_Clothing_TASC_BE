@@ -1,6 +1,5 @@
 package com.tasc.clothing.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,33 +9,54 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tasc.clothing.model.Cart;
 import com.tasc.clothing.model.CartItem;
 import com.tasc.clothing.model.Product;
+import com.tasc.clothing.model.User;
 import com.tasc.clothing.repository.CartItemRepository;
-
+import com.tasc.clothing.repository.CartRepository;
 
 @Service
-public class CartItemServiceImplement implements CartItemService{
+public class CartItemServiceImplement implements CartItemService {
 
     @Autowired
-    private CartItemRepository cartItemRepository; 
+    private CartItemRepository cartItemRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private ProductService productService;
 
     @Override
     @Transactional
-    public CartItem addOrUpdateCartItem(Product product, Cart cart, String color, String size) {
-        List<CartItem> existingItems = cartItemRepository.findByCartAndProductAndColorAndSize(cart, product, color, size);
+    public CartItem addOrUpdateCartItem(User user, Long productId, Cart cart, String color, String size) {
 
-        if (!existingItems.isEmpty()) {
-            // Sản phẩm đã tồn tại, tăng số lượng
-            CartItem existingItem = existingItems.get(0);
+        Cart existCart = cartRepository.findCartByUserId(user.getId());
+        if (cart == null) {
+            existCart = new Cart();
+            existCart.setUser(user);
+            existCart = cartRepository.save(existCart);
+        }
+
+        CartItem existingItem = cartItemRepository.findByCartAndProductIdAndColorAndSizeAndUserId(cart, productId, color, size, user.getId());
+
+        if (existingItem != null) {
             existingItem.setQuantity(existingItem.getQuantity() + 1);
+            existingItem.setPrice(existingItem.getProduct().getPrice() * existingItem.getQuantity());
+            
             return cartItemRepository.save(existingItem);
+
         } else {
-            // Sản phẩm chưa tồn tại, thêm mới
+            Product product = productService.findProductById(productId);
+
             CartItem newItem = new CartItem();
+
             newItem.setProduct(product);
-            newItem.setCart(cart);
-            newItem.setQuantity(1); // Bắt đầu với 1 sản phẩm
+            newItem.setCart(existCart);
+            newItem.setQuantity(1);
             newItem.setColor(color);
             newItem.setSize(size);
+            newItem.setPrice(product.getPrice());
+            newItem.setUserId(user.getId());
+
             return cartItemRepository.save(newItem);
         }
     }
@@ -72,6 +92,4 @@ public class CartItemServiceImplement implements CartItemService{
         return cartItemRepository.findById(id);
     }
 
-    
-    
 }
