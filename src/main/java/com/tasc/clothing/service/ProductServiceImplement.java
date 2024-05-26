@@ -23,13 +23,11 @@ public class ProductServiceImplement implements ProductService{
     @Override
     public Product createProduct(Product product) {
         Product newProduct = new Product();
-
         newProduct.setName(product.getName());
         newProduct.setDescription(product.getDescription());
         newProduct.setPrice(product.getPrice());
         newProduct.setDetails(product.getDetails());
         newProduct.setImages(product.getImages());
-
         return proRepository.save(newProduct);
     }
 
