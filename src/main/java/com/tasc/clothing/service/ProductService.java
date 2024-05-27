@@ -20,6 +20,8 @@ public interface ProductService {
     
     public List<Product> findProductByCategory(Long categoryId);
 
+
+
     public Page<Product> getAllFilter(ProductFilterRequest productFilterRequest, Pageable pageable);
     
 }

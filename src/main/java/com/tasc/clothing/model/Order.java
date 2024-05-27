@@ -3,8 +3,10 @@ package com.tasc.clothing.model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -52,8 +54,8 @@ public class Order {
     @JsonIgnore
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems = new ArrayList<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CartItem> cartItems = new HashSet<>();
 
     private LocalDateTime deliveryDateTime;
 
@@ -74,6 +76,7 @@ public class Order {
 
     private LocalDateTime updateStatusAt;
 
+    
     public enum OrderStatus {
         PLACED, // Đơn hàng đang chờ xử lý
         CONFIRMED, // Đơn hàng đã được xác nhận

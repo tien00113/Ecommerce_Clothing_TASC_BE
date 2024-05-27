@@ -46,7 +46,6 @@ public class ProductController {
 
     @DeleteMapping("/admin/product/remove")
     public ResponseEntity<String> deleteProduct(@PathVariable Long productId) throws ProductException{
-        
         return new ResponseEntity<String>(productService.deleteProduct(productId), HttpStatus.OK);
     }
 }

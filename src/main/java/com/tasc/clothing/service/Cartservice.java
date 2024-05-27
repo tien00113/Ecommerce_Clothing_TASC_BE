@@ -6,6 +6,9 @@ public interface CartService {
 
     public Cart findCartByUserId(Long userId);
 
-    public Cart removeCartItem(Long cartItemId);
+    void removeCartItem(Long cartItemId ,Long userId);
+
+    void clearCart(Long userId);
+    
 
 }
