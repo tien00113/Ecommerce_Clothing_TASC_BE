@@ -30,8 +30,15 @@ public class ProductServiceImplement implements ProductService {
         newProduct.setName(product.getName());
         newProduct.setDescription(product.getDescription());
         newProduct.setPrice(product.getPrice());
-        newProduct.setDetails(product.getDetails());
+        newProduct.setActive(true);
+        // newProduct.setDetails(product.getDetails());
         newProduct.setImages(product.getImages());
+
+        if (product.getDetails() != null && !product.getDetails().isEmpty()) {
+            for (Map.Entry<String, String> entry : product.getDetails().entrySet()) {
+                newProduct.addDetail(entry.getKey(), entry.getValue());
+            }
+        }
 
         return proRepository.save(newProduct);
     }
@@ -68,10 +75,13 @@ public class ProductServiceImplement implements ProductService {
     }
 
     @Override
-    public String deleteProduct(Long productId) {
-        proRepository.deleteById(productId);
+    public void deleteProduct(Long productId) {
+        Product product = proRepository.findById(productId).orElse(null);
 
-        return ("deleted product successfully");
+        product.setActive(false);
+
+        proRepository.save(product);
+
     }
 
     @Override

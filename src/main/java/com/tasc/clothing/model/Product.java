@@ -28,8 +28,11 @@ public class Product {
 
     private String name;
     private int price;
+
     private String images;
     private String description;
+
+    private Boolean active;
   
     // private String size;
     // private String color;
@@ -56,5 +59,26 @@ public class Product {
             return Collections.emptyList();
         }
         return Arrays.asList(this.images.split(","));
+    }
+
+    public void addDetail(String key, String value) {
+        this.details.put(key, value);
+    }
+
+    public String[] getSizeArray() {
+        if (this.details.containsKey("size")) {
+            String sizeStr = this.details.get("size");
+            return sizeStr.split(",");
+        }
+        return new String[0];
+    }
+
+    // Thêm phương thức để trả về mảng color
+    public String[] getColorArray() {
+        if (this.details.containsKey("color")) {
+            String colorStr = this.details.get("color");
+            return colorStr.split(",");
+        }
+        return new String[0];
     }
 }

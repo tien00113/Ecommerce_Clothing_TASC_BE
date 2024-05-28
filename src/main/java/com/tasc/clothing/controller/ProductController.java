@@ -23,11 +23,17 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/allproduct")
+    @PostMapping("/allproduct")
     public Page<Product> getAllProducts(
             @RequestBody ProductFilterRequest productFilterRequest,
             Pageable pageable) {
         return productService.getAllFilter(productFilterRequest, pageable);
+    }
+
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<Product> getProductDetail(@PathVariable Long productId){
+
+        return new ResponseEntity<Product>(productService.findProductById(productId), HttpStatus.OK) ;
     }
 
     @PostMapping("/admin/product/create")
@@ -44,9 +50,11 @@ public class ProductController {
         return new ResponseEntity<Product>(updateProduct, HttpStatus.OK);
     }
 
-    @DeleteMapping("/admin/product/remove")
+    @DeleteMapping("/admin/product/deactive")
     public ResponseEntity<String> deleteProduct(@PathVariable Long productId) throws ProductException{
+
+        productService.deleteProduct(productId);
         
-        return new ResponseEntity<String>(productService.deleteProduct(productId), HttpStatus.OK);
+        return new ResponseEntity<>("Đã thay đổi trạng thái", HttpStatus.OK);
     }
 }

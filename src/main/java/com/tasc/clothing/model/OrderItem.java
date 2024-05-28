@@ -30,5 +30,8 @@ public class OrderItem {
     private int price;
     private int quantity;
 
+    private String color;
+    private String size;
+
     private Long userId;
 }

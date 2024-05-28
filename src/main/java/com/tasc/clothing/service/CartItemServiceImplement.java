@@ -13,17 +13,19 @@ import com.tasc.clothing.model.User;
 import com.tasc.clothing.repository.CartItemRepository;
 import com.tasc.clothing.repository.CartRepository;
 
+
 @Service
-public class CartItemServiceImplement implements CartItemService {
+public class CartItemServiceImplement implements CartItemService{
 
     @Autowired
-    private CartItemRepository cartItemRepository;
+    private CartItemRepository cartItemRepository; 
 
-    @Autowired
+    @Autowired 
     private CartRepository cartRepository;
 
-    @Autowired
+    @Autowired 
     private ProductService productService;
+
 
     @Override
     @Transactional
@@ -41,7 +43,10 @@ public class CartItemServiceImplement implements CartItemService {
         if (existingItem != null) {
             existingItem.setQuantity(existingItem.getQuantity() + 1);
             existingItem.setPrice(existingItem.getProduct().getPrice() * existingItem.getQuantity());
-            
+
+            existCart.getCartItems().add(existingItem);
+            existCart.setTotalPrice(existCart.getTotalPrice() + existingItem.getPrice()*existingItem.getQuantity());
+            cartRepository.save(existCart);
             return cartItemRepository.save(existingItem);
 
         } else {
@@ -57,39 +62,59 @@ public class CartItemServiceImplement implements CartItemService {
             newItem.setPrice(product.getPrice());
             newItem.setUserId(user.getId());
 
+            existCart.getCartItems().add(newItem);
+            existCart.setTotalPrice(existCart.getTotalPrice() + newItem.getPrice()*newItem.getQuantity());
+            cartRepository.save(existCart);
             return cartItemRepository.save(newItem);
         }
     }
 
     @Override
     @Transactional
-    public CartItem updateCartItem(Long id, CartItem updatedCartItem) {
-        return cartItemRepository.findById(id)
-                .map(cartItem -> {
-                    cartItem.setProduct(updatedCartItem.getProduct());
-                    cartItem.setCart(updatedCartItem.getCart());
-                    cartItem.setQuantity(updatedCartItem.getQuantity());
-                    cartItem.setPrice(updatedCartItem.getPrice());
-                    cartItem.setUserId(updatedCartItem.getUserId());
-                    cartItem.setColor(updatedCartItem.getColor());
-                    cartItem.setSize(updatedCartItem.getSize());
-                    return cartItemRepository.save(cartItem);
-                })
-                .orElseGet(() -> {
-                    updatedCartItem.setId(id);
-                    return cartItemRepository.save(updatedCartItem);
-                });
+    public String deleteCartItem(Long cartItemId) {
+        cartItemRepository.deleteById(cartItemId);
+        return "đã xóa item trong giỏ hàng";
     }
 
-    @Override
-    @Transactional
-    public void deleteCartItem(Long id) {
-        cartItemRepository.deleteById(id);
-    }
 
     // Tìm CartItem theo ID
     public Optional<CartItem> findCartItemById(Long id) {
         return cartItemRepository.findById(id);
     }
 
+    @Override
+    @Transactional
+    public CartItem increaseQuantity(Long itemId) {
+        CartItem cartItem = cartItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy item có id: " + itemId));
+
+        cartItem.setQuantity(cartItem.getQuantity() + 1);
+        cartItem.setPrice(cartItem.getPrice() + cartItem.getProduct().getPrice());
+        return cartItemRepository.save(cartItem);
+    }
+
+
+    @Override
+    @Transactional
+    public CartItem decreaseQuantity(Long itemId) {
+        CartItem cartItem = cartItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy item có id: " + itemId));
+
+        int currentQuantity = cartItem.getQuantity();
+        if (currentQuantity > 1) {
+            cartItem.setQuantity(currentQuantity - 1);
+            cartItem.setPrice(cartItem.getPrice() - cartItem.getProduct().getPrice());
+
+            cartItemRepository.save(cartItem);
+        } else {
+            Cart cart = cartRepository.findCartByUserId(cartItem.getUserId());
+
+            cart.getCartItems().remove(cartItem);
+            cartItemRepository.delete(cartItem);
+            cartItem = null;
+        }
+
+        return cartItem;
+    }
+    
 }

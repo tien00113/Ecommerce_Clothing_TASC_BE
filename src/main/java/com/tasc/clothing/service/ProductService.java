@@ -11,8 +11,10 @@ import com.tasc.clothing.request.ProductFilterRequest;
 
 public interface ProductService {
     public Product createProduct(Product product);
+
     public Product updateProduct(Product product) throws ProductException;
-    public String deleteProduct(Long productId);
+    
+    public void deleteProduct(Long productId);
 
     public List<Product> getAllProduct();
 
