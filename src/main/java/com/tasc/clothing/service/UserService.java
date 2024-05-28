@@ -7,7 +7,6 @@ import com.tasc.clothing.exception.UserException;
 import com.tasc.clothing.model.User;
 
 public interface UserService {
-    public User registerUser(User user);
     
     public User findUserById(Long userId) throws UserException;
 
