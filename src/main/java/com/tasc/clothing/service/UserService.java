@@ -19,4 +19,5 @@ public interface UserService {
     public User setRolesUser(String adminUsername, String targetUsername, Collection<User.Role> roles);
 
     public List<User> getAllusers();
+
 }

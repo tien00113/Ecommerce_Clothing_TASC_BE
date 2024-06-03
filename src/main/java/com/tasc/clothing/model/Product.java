@@ -33,14 +33,18 @@ public class Product {
     private String description;
 
     private Boolean active;
-  
+
     // private String size;
     // private String color;
-    @ElementCollection
-    @CollectionTable(name = "product_details", joinColumns = @JoinColumn(name = "product_id"))
-    @MapKeyColumn(name = "detail_type")
-    @Column(name = "detail_value")
-    private Map<String, String> details = new HashMap<>();
+    // @ElementCollection
+    // @CollectionTable(name = "product_details", joinColumns = @JoinColumn(name =
+    // "product_id"))
+    // @MapKeyColumn(name = "detail_type")
+    // @Column(name = "detail_value")
+    // private Map<String, String> details = new HashMap<>();
+
+    private String color;
+    private String size;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
@@ -61,24 +65,34 @@ public class Product {
         return Arrays.asList(this.images.split(","));
     }
 
-    public void addDetail(String key, String value) {
-        this.details.put(key, value);
+    public void addColor(String color){
+        if(this.color == null || this.color.isEmpty()) {
+            this.color = color;
+        } else {
+            this.color += "," + size;
+        }
     }
 
-    public String[] getSizeArray() {
-        if (this.details.containsKey("size")) {
-            String sizeStr = this.details.get("size");
-            return sizeStr.split(",");
+    public List<String> getColorList() {
+        if (this.color == null || this.color.isEmpty()) {
+            return Collections.emptyList();
         }
-        return new String[0];
+        return Arrays.asList(this.color.split(","));
     }
 
-    // Thêm phương thức để trả về mảng color
-    public String[] getColorArray() {
-        if (this.details.containsKey("color")) {
-            String colorStr = this.details.get("color");
-            return colorStr.split(",");
+    public void addSize(String size){
+        if(this.size == null || this.size.isEmpty()) {
+            this.size = size;
+        } else {
+            this.size += "," + size;
         }
-        return new String[0];
     }
+
+    public List<String> getSizeList() {
+        if (this.size == null || this.size.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(this.size.split(","));
+    }
+
 }

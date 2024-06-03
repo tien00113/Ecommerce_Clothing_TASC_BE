@@ -12,6 +12,7 @@ import com.tasc.clothing.model.Product;
 import com.tasc.clothing.model.User;
 import com.tasc.clothing.repository.CartItemRepository;
 import com.tasc.clothing.repository.CartRepository;
+import com.tasc.clothing.request.CartItemRequest;
 
 
 @Service
@@ -29,23 +30,64 @@ public class CartItemServiceImplement implements CartItemService{
 
     @Override
     @Transactional
-    public CartItem addOrUpdateCartItem(User user, Long productId, Cart cart, String color, String size) {
+    public CartItem addOrUpdateCartItem(User user, CartItemRequest cartItemRequest) {
+
+        // Cart existCart = cartRepository.findCartByUserId(user.getId());
+        // if (cartItemRequest.getCart() == null) {
+        //     existCart = new Cart();
+        //     existCart.setUser(user);
+        //     existCart = cartRepository.save(existCart);
+        // }
+
+        // CartItem existingItem = cartItemRepository.findByCartAndProductIdAndColorAndSizeAndUserId(cartItemRequest.getCart(), cartItemRequest.getProductId(), cartItemRequest.getColor(), cartItemRequest.getSize(), user.getId());
+
+        // if (existingItem != null) {
+        //     existingItem.setQuantity(existingItem.getQuantity() + 1);
+        //     existingItem.setPrice(existingItem.getProduct().getPrice() * existingItem.getQuantity());
+
+        //     existCart.getCartItems().add(existingItem);
+        //     existCart.setTotalPrice(existCart.getTotalPrice() + existingItem.getPrice()*existingItem.getQuantity());
+        //     cartRepository.save(existCart);
+        //     return cartItemRepository.save(existingItem);
+
+        // } else {
+        //     Product product = productService.findProductById(cartItemRequest.getProductId());
+
+        //     CartItem newItem = new CartItem();
+
+        //     newItem.setProduct(product);
+        //     newItem.setCart(existCart);
+        //     newItem.setQuantity(1);
+        //     newItem.setColor(cartItemRequest.getColor());
+        //     newItem.setSize(cartItemRequest.getSize());
+        //     newItem.setPrice(product.getPrice());
+        //     newItem.setUserId(user.getId());
+
+        //     existCart.getCartItems().add(newItem);
+        //     existCart.setTotalPrice(existCart.getTotalPrice() + newItem.getPrice()*newItem.getQuantity());
+        //     cartRepository.save(existCart);
+        //     return cartItemRepository.save(newItem);
+        // }
+        Cart cart = cartItemRequest.getCart();
+        Long productId = cartItemRequest.getProductId();
+        String color = cartItemRequest.getColor();
+        String size = cartItemRequest.getSize();
 
         Cart existCart = cartRepository.findCartByUserId(user.getId());
-        if (cart == null) {
+        if (existCart == null) {
             existCart = new Cart();
             existCart.setUser(user);
             existCart = cartRepository.save(existCart);
         }
 
-        CartItem existingItem = cartItemRepository.findByCartAndProductIdAndColorAndSizeAndUserId(cart, productId, color, size, user.getId());
+        CartItem existingItem = cartItemRepository.findByCartAndProductIdAndColorAndSizeAndUserId(existCart, productId, color, size, user.getId());
 
         if (existingItem != null) {
             existingItem.setQuantity(existingItem.getQuantity() + 1);
             existingItem.setPrice(existingItem.getProduct().getPrice() * existingItem.getQuantity());
 
             existCart.getCartItems().add(existingItem);
-            existCart.setTotalPrice(existCart.getTotalPrice() + existingItem.getPrice()*existingItem.getQuantity());
+            existCart.setTotalPrice(existCart.getTotalPrice() + existingItem.getPrice() * existingItem.getQuantity());
             cartRepository.save(existCart);
             return cartItemRepository.save(existingItem);
 
@@ -63,7 +105,7 @@ public class CartItemServiceImplement implements CartItemService{
             newItem.setUserId(user.getId());
 
             existCart.getCartItems().add(newItem);
-            existCart.setTotalPrice(existCart.getTotalPrice() + newItem.getPrice()*newItem.getQuantity());
+            existCart.setTotalPrice(existCart.getTotalPrice() + newItem.getPrice() * newItem.getQuantity());
             cartRepository.save(existCart);
             return cartItemRepository.save(newItem);
         }

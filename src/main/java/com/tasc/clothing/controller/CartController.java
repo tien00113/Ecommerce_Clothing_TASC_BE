@@ -34,7 +34,7 @@ public class CartController {
     public ResponseEntity<CartItem> addOrUpdateCartItem(@RequestHeader("Authorization") String jwt ,@RequestBody CartItemRequest request) {
 
         User user = userService.findUserByJwt(jwt);
-        CartItem cartItem = cartItemService.addOrUpdateCartItem(user , request.getProductId(), request.getCart(), request.getColor(), request.getSize());
+        CartItem cartItem = cartItemService.addOrUpdateCartItem(user , request);
 
         return ResponseEntity.ok(cartItem);
     }

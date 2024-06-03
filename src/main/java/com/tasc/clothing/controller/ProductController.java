@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tasc.clothing.exception.ProductException;
@@ -25,9 +26,8 @@ public class ProductController {
 
     @PostMapping("/allproduct")
     public Page<Product> getAllProducts(
-            @RequestBody ProductFilterRequest productFilterRequest,
-            Pageable pageable) {
-        return productService.getAllFilter(productFilterRequest, pageable);
+            @RequestBody ProductFilterRequest productFilterRequest) {
+        return productService.getAllFilter(productFilterRequest);
     }
 
     @GetMapping("/product/{productId}")
@@ -37,7 +37,7 @@ public class ProductController {
     }
 
     @PostMapping("/admin/product/create")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> createProduct(@RequestBody Product product, @RequestHeader("Authorization") String jwt) throws Exception {
         Product createdproduct = productService.createProduct(product);
 
         return new ResponseEntity<Product>(createdproduct, HttpStatus.CREATED);

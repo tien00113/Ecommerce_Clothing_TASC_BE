@@ -1,7 +1,9 @@
 package com.tasc.clothing.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,23 @@ public class CategoryServiceImplement implements CategoryService{
     private CategoryRepository categoryRepository;
 
     @Override
-    public Category createCategory(Category category) throws Exception {
-        Category newCategory = new Category();
+    public Category createCategory(String name, Long parentCategoryId) throws Exception {
+        Category parentCategory = null;
+        
+        if (parentCategoryId != null) {
+            Optional<Category> parentCategoryOptional = categoryRepository.findById(parentCategoryId);
+            if (parentCategoryOptional.isPresent()) {
+                parentCategory = parentCategoryOptional.get();
+            } else {
+                throw new IllegalArgumentException("Parent category ID not found: " + parentCategoryId);
+            }
+        }
 
-        newCategory.setName(category.getName());
+        Category category = new Category();
+        category.setName(name);
+        category.setParentCategory(parentCategory);
 
-        return categoryRepository.save(newCategory);
+        return categoryRepository.save(category);
     }
 
     @Override
@@ -70,4 +83,21 @@ public class CategoryServiceImplement implements CategoryService{
         
         return categoryRepository.findAll();
     }
+
+    @Override
+    public Set<Long> getAllSubCategoryIds(Long categoryId) {
+        Set<Long> categoryIds = new HashSet<>();
+        addSubCategoryIds(categoryId, categoryIds);
+        return categoryIds;
+    }   
+
+
+    private void addSubCategoryIds(Long categoryId, Set<Long> categoryIds) {
+        categoryIds.add(categoryId);
+        List<Category> subCategories = categoryRepository.findByParentCategoryId(categoryId);
+        for (Category subCategory : subCategories) {
+            addSubCategoryIds(subCategory.getId(), categoryIds);
+        }
+    }
+
 }

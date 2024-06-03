@@ -7,8 +7,8 @@ import lombok.Data;
 
 @Data
 public class OrderRequest {
-     private Cart cart;
+    private Cart cart;
     private String note;
     private String address;
-    private Payment payment;
+    // private Payment payment;
 }
