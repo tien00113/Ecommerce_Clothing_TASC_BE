@@ -7,28 +7,31 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
-public class CartItem {
+@Getter
+@Setter
+@NoArgsConstructor
+public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
+    @ManyToOne
+    private Order order;
+
     @ManyToOne
     private Product product;
 
-    @JsonIgnore
-    @ManyToOne
-    // @JoinColumn(name = "cart_id")
-    private Cart cart;
-
-    private int quantity;
     private int price;
+    private int quantity;
 
     private String color;
     private String size;
-    
+
     private Long userId;
 }
